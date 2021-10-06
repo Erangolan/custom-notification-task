@@ -13,7 +13,7 @@ export default function ClientComponent() {
       socket.on('connect', async () => {
         console.log(`socket ${socket.id} connected successfully to server`)
 
-        await fetch(`http://localhost:4001/init?id=${newSocket.id}`, {
+        await fetch(`http://localhost:4001/init?id=${socket.id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
