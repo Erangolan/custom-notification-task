@@ -1,58 +1,59 @@
 // eslint-disable-next-line no-unused-vars
-import React from 'react'
-import logo from './logo.svg'
-import './App.css'
+import React, { useEffect, useState } from 'react'
+import { io } from 'socket.io-client'
+import { Alert, AlertTitle, Stack } from '@mui/material'
+const ENDPOINT = 'http://127.0.0.1:4001'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
-  )
+export default function ClientComponent() {
+  const [data, setData] = useState({ id: '', type: '', text: '', index: '' })
+
+  useEffect(() => {
+    const notification = async () => {
+      const socket = io.connect(ENDPOINT)
+      socket.on('connect', async () => {
+        console.log(`socket ${socket.id} connected successfully to server`)
+
+        await fetch(`http://localhost:4001/init?id=${newSocket.id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+
+        socket.on('notification', (data) => {
+          const { type, text, index, id } = data
+          setData({
+            ...data,
+            type,
+            text,
+            index,
+            id,
+          })
+        })
+        socket.on('disconnect', () => {
+          console.log('Disconnected from server')
+        })
+      })
+    }
+    notification()
+  }, [])
+
+  const handleClick = async () => {
+    const { id: userId, index } = data
+    await fetch(`http://localhost:4001/click?userId=${userId}&index=${index}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  }
+
+  return data.type ? (
+    <Stack sx={{ width: '50%', margin: 'auto', marginTop: '10%' }} spacing={2}>
+      <Alert severity={data.type} onClick={handleClick}>
+        <AlertTitle>{data.type}</AlertTitle>
+        {data.text}
+      </Alert>
+    </Stack>
+  ) : null
 }
-
-export default App
