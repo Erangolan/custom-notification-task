@@ -12,9 +12,8 @@ module.exports = (async (req, res) => {
     },
   } = req
 
-  const socket = app.get('socketIO')
-
   try {
+    const socket = app.get('socketIO')
     const user = new User()
     await user.save()
 
