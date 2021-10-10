@@ -1,5 +1,3 @@
-const cron = require('node-cron')
-
 const {
   User,
 } = require('../../models')
@@ -27,7 +25,7 @@ module.exports = (async (req, res) => {
 
     // console.log('new user created')
 
-    messageDelivery(socket, socketId, userId, notificationPeriod)
+    messageDelivery(socket, socketId, userId, notificationPeriod, durationPeriod)
     return res.json({
       message: 'success',
       user,
