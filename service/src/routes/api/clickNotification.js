@@ -11,10 +11,11 @@ module.exports = (async (req, res) => {
   } = req
 
   try {
-    console.log(index)
-    await User.updateOne(
-      { userId }, { $pull: { message: { index } } },
-    )
+    const { message } = await User.findById(userId).lean().exec()
+
+    const messages = message.filter((item, i) => i !== Number(index))
+
+    await User.updateOne({ _id: userId }, { $set: { message: messages } })
 
     console.log(`message: ${index} deleted from ${userId} DB successfully!`)
 

@@ -5,7 +5,7 @@ import { Alert, AlertTitle, Stack } from '@mui/material'
 const ENDPOINT = 'http://127.0.0.1:4001'
 
 export default function ClientComponent() {
-  const [data, setData] = useState({ id: '', type: '', text: '', index: '', userId: '' })
+  const [data, setData] = useState({ id: '', type: '', index: '', text: '', userId: '' })
 
   useEffect(() => {
     const notification = async () => {
@@ -22,19 +22,16 @@ export default function ClientComponent() {
           },
         })
 
-        setData({
-          ...data,
-          userId,
-        })
-
         socket.on('notification', (data) => {
           const { type, text, index, id } = data
+          console.log(data)
           setData({
             ...data,
             type,
-            text,
             index,
+            text,
             id,
+            userId,
           })
         })
         socket.on('disconnect', () => {
