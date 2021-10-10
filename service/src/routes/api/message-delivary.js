@@ -4,7 +4,7 @@ const {
   User,
 } = require('../../models')
 
-module.exports = async (socket, socketId, userId, notificationPeriod) => {
+module.exports = async (socket, socketId, userId, notificationPeriod, durationPeriod) => {
   try {
     cron.schedule(`${notificationPeriod} * * * * *`, async () => {
       const { message, _id: id } = await User.findById(userId).lean().exec()
@@ -20,12 +20,11 @@ module.exports = async (socket, socketId, userId, notificationPeriod) => {
         lowerMsg = lowerMsg.toLocaleUpperCase()
       }
 
-      console.log('lowerMsg: ', lowerMsg)
-
       const pack = {
         text: lowerMsg,
         type: message[random].type,
         index: random,
+        durationPeriod,
         id,
       }
 
