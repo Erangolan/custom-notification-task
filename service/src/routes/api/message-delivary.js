@@ -4,24 +4,31 @@ const {
   User,
 } = require('../../models')
 
-module.exports = async (socket, socketId, userId, notificationPeriod, durationPeriod) => {
+module.exports = async (socket, socketId, userId) => {
   try {
-    cron.schedule(`${notificationPeriod} * * * * *`, async () => {
-      const { message, _id: id } = await User.findById(userId).lean().exec()
+    const {
+      message,
+      _id: id,
+      notificationPeriod,
+      durationPeriod,
+    } = await User.findById(userId).lean().exec()
+
+    cron.schedule(`*/${notificationPeriod} * * * * *`, async () => {
       const random = Math.floor((Math.random() * message.length))
 
-      let lowerMsg = message[random].text.toLowerCase()
+      const lowerMsg = message[random].text.toLowerCase()
+      let msgToDisplay
 
       if (lowerMsg.includes('sale')) {
-        lowerMsg = lowerMsg.concat('!')
+        msgToDisplay = message[random].text.concat('!')
       } else if (lowerMsg.includes('new')) {
-        lowerMsg = '~~'.concat(lowerMsg)
+        msgToDisplay = '~~'.concat(message[random].text)
       } else if (lowerMsg.includes('limited edition')) {
-        lowerMsg = lowerMsg.toLocaleUpperCase()
+        msgToDisplay = lowerMsg.toLocaleUpperCase()
       }
 
       const pack = {
-        text: lowerMsg,
+        text: msgToDisplay || message[random].text,
         type: message[random].type,
         index: random,
         durationPeriod,
