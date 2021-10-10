@@ -23,7 +23,7 @@ module.exports = (async (req, res) => {
 
     const { _id: userId } = user
 
-    // console.log('new user created')
+    console.log('new user created')
 
     messageDelivery(socket, socketId, userId, notificationPeriod, durationPeriod)
     return res.json({
