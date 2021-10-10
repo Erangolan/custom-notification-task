@@ -4,6 +4,10 @@ const {
   User,
 } = require('../../models')
 
+const INIT_MSG = require('../../init-message.json')
+
+const messageDelivery = require('./message-delivary')
+
 module.exports = (async (req, res) => {
   const {
     app,
@@ -14,30 +18,16 @@ module.exports = (async (req, res) => {
 
   try {
     const socket = app.get('socketIO')
-    const user = new User()
+    const notificationPeriod = Math.floor(Math.random() * (6) + 5)
+    const durationPeriod = Math.floor(Math.random() * (3) + 1)
+    const user = new User({ message: INIT_MSG, notificationPeriod, durationPeriod })
     await user.save()
 
     const { _id: userId } = user
 
-    console.log('new user created')
+    // console.log('new user created')
 
-    const notificationPeriod = Math.floor(Math.random() * (6) + 5)
-
-    cron.schedule(`${notificationPeriod} * * * * *`, async () => {
-      const { message, _id: id } = await User.findById(userId).lean().exec()
-      const random = Math.floor((Math.random() * message.length))
-
-      const pack = {
-        ...message[random],
-        index: random,
-        id,
-      }
-
-      console.log('pack sent: ', pack)
-
-      socket.to(socketId).emit('notification', pack)
-    })
-
+    messageDelivery(socket, socketId, userId, notificationPeriod)
     return res.json({
       message: 'success',
       user,
